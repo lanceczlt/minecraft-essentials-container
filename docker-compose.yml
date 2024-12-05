@@ -9,3 +9,4 @@ services:
       EULA: "TRUE"
     volumes:
       - /home/lance-c/mcdata:/data
+    restart: on-failure:3
