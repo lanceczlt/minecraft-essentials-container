@@ -12,8 +12,12 @@ services:
       MAX_MEMORY: "5G"
       EULA: "TRUE"
       ONLINE_MODE: "TRUE"
-      SERVER_NAME: "LCPaperMC"
-      WHITELIST_FILE: /player-config/whitelist.json
+      SERVER_NAME: "LC-EssentialX"
+      MOTD: "§6Welcome to the Server! §eHave fun! §b🎮"
+      OVERRIDE_ICON: "TRUE"
+      ENFORCE_WHITELIST: "TRUE"
+      ANNOUNCE_PLAYER_ACHIEVEMENTS: "TRUE"
+      GENERATE_STRUCTURES: "TRUE"
     volumes:
       - /home/lance-c/paper-mc/:/data
     restart: unless-stopped
