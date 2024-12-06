@@ -1,0 +1,22 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+    environment:
+      TYPE: "AUTO_CURSEFORGE"
+      # The Curse Forge Developer Console API key to use type AUTO_CURSEFORGE. Escape $ symbols with an additional $
+      CF_API_KEY: ${CF_API_KEY}
+      # The Curse Forge URL of the modpack to use. Add the verion URL of the specific version at the end to pin the modpack version
+      CF_PAGE_URL: "https://www.curseforge.com/minecraft/modpacks/all-the-mods-8/files/4633481"
+      CF_EXCLUDE_MODS: "486778"
+      MEMORY: "4G"
+      MAX_MEMORY: "8G"
+      #Minecraft Version
+      VERSION: "1.19.2"
+      EULA: "TRUE"
+    volumes:
+      - /home/lance-c/mcdata:/data
+    restart: on-failure:3
