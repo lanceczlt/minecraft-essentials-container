@@ -1,0 +1,19 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    container_name: paper-mc
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+    environment:
+      TYPE: "PAPER"
+      MEMORY: "3G"
+      MAX_MEMORY: "5G"
+      EULA: "TRUE"
+      ONLINE_MODE: "TRUE"
+      SERVER_NAME: "LCPaperMC"
+      WHITELIST_FILE: /player-config/whitelist.json
+    volumes:
+      - /home/lance-c/paper-mc/:/data
+    restart: unless-stopped
