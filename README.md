@@ -7,3 +7,4 @@ Use the script to select which server to start
 ## Features of menu
 1. server start/stop
 2. server logs
+3. server status
