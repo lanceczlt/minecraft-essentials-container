@@ -3,21 +3,20 @@ import subprocess
 import curses
 
 def list_servers(base_dir):
-    """List all server directories, excluding hidden directories."""
+    """List all server directories"""
     return [
         d for d in os.listdir(base_dir)
-        if os.path.isdir(os.path.join(base_dir, d)) and not d.startswith(".")
+        if os.path.isdir(os.path.join(base_dir, d)) and d.endswith("-container")
     ]
 
 def display_menu(stdscr, servers, colors):
     """Display the server menu with navigation."""
-    curses.curs_set(0)  # Hide the cursor
+    curses.curs_set(0) 
     current_row = 0
 
     while True:
         stdscr.clear()
 
-        # Display menu items
         for idx, server in enumerate(servers):
             if idx == current_row:
                 stdscr.addstr(idx, 0, f"> {server}", curses.color_pair(colors[idx]))
@@ -32,16 +31,22 @@ def display_menu(stdscr, servers, colors):
             current_row -= 1
         elif key == curses.KEY_DOWN and current_row < len(servers) - 1:
             current_row += 1
-        elif key == ord("\n"):  # Enter key
+        elif key == ord("\n"): 
             return current_row
-        elif key == ord("q"):  # Quit
+        elif key == ord("q"): 
             return -1
 
-def start_container(server_path):
+def start_container(server_path, proxy_path):
+    print(f"Starting proxy in {proxy_path}...")
+    subprocess.run(["docker-compose", "up", "-d"], cwd=proxy_path)
+
     """Start the selected container."""
     subprocess.run(["docker-compose", "up", "-d"], cwd=server_path)
 
-def stop_container(server_path):
+def stop_container(server_path, proxy_path):
+    print(f"Stopping proxy in {proxy_path}...")
+    subprocess.run(["docker-compose", "down"], cwd=proxy_path)
+
     """Stop the selected container."""
     subprocess.run(["docker-compose", "down"], cwd=server_path)
 
@@ -75,16 +80,15 @@ def view_status(server_path, stdscr):
 def main(stdscr):
     curses.start_color()
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    if not os.path.exists(script_dir):
-        stdscr.addstr(0, 0, f"Error: Directory '{script_dir}' does not exist.")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    if not os.path.exists(base_dir):
+        stdscr.addstr(0, 0, f"Error: Directory '{base_dir}' does not exist.")
         stdscr.refresh()
         stdscr.getch()
         return
 
-    servers = list_servers(script_dir)
+    servers = list_servers(base_dir)
 
-    # Initialize unique colors for each server
     colors = {}
     for idx in range(len(servers)):
         curses.init_pair(idx + 1, idx + 1, curses.COLOR_BLACK)
@@ -101,7 +105,8 @@ def main(stdscr):
             break
 
         server_name = servers[choice]
-        server_path = os.path.join(script_dir, server_name)
+        server_path = os.path.join(base_dir, server_name)
+        proxy_path = os.path.join(base_dir, "proxy")
 
         while True:
             stdscr.clear()
@@ -112,12 +117,12 @@ def main(stdscr):
 
             key = stdscr.getch()
             if key == ord("s"):
-                start_container(server_path)
+                start_container(server_path, proxy_path)
                 stdscr.addstr(4, 0, f"Started {server_name}. Press any key to continue.")
                 stdscr.refresh()
                 stdscr.getch()
             elif key == ord("t"):
-                stop_container(server_path)
+                stop_container(server_path, proxy_path)
                 stdscr.addstr(4, 0, f"Stopped {server_name}. Press any key to continue.")
                 stdscr.refresh()
                 stdscr.getch()
